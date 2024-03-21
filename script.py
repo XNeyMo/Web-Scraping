@@ -1,4 +1,5 @@
 import re
+import html
 import requests
 from bs4 import BeautifulSoup
 
@@ -54,15 +55,20 @@ for category_link in categories_links:
             soup = BeautifulSoup(title_page_content, 'html.parser')
 
             title_pattern = r'<div class="elementor-element elementor-element-.*? elementor-widget elementor-widget-theme-post-title elementor-page-title elementor-widget-heading".*?>\s*<div class="elementor-widget-container">\s*<h2 class="elementor-heading-title elementor-size-default">(.*?)</h2>\s*</div>\s*</div>'
-            title = re.findall(title_pattern, str(title_page_content))
+            title = html.unescape(re.findall(title_pattern, str(title_page_content))[0])
 
             sections = soup.find_all(class_="elementor-widget-wrap elementor-element-populated")
 
-            print(f'{category} - {title}')
-            # for section in sections:
-            #     parrafos = section.find_all('p')
+            paragraphs = []
 
-            #     for p in parrafos:
-            #         print(p)
+            print(f'{category} - {title}')
+
+            for section in sections:
+                section_paragraphs = section.find_all('p')
+
+                for paragraph in section_paragraphs:
+                    paragraphs.append(paragraph)
+
+            print('finished\n')
 
     counter += 1
