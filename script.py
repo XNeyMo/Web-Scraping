@@ -9,9 +9,6 @@ class Reading:
         self.title = title
         self.content = content
 
-    def __str__(self):
-        return f'{self.category} - {self.title}\n\n{self.content}\n\n'
-
 categories_url = 'https://www.despertarsabiendo.com/categorias'
 categories_result = requests.get(categories_url)
 categories_content = categories_result.text
@@ -59,15 +56,18 @@ for category_link in categories_links:
             title_pattern = r'<div class="elementor-element elementor-element-.*? elementor-widget elementor-widget-theme-post-title elementor-page-title elementor-widget-heading".*?>\s*<div class="elementor-widget-container">\s*<h2 class="elementor-heading-title elementor-size-default">(.*?)</h2>\s*</div>\s*</div>'
             title = html.unescape(re.findall(title_pattern, str(title_page_content))[0])
 
-            sections = soup.find_all(class_="elementor-widget-wrap elementor-element-populated")
+            sections = soup.find_all('div', class_="elementor-widget-container")
 
-            content = []
+            html_content = []
 
             for section in sections:
-                section_paragraphs = section.find_all('p')
+                section_paragraphs = section.find_all('p', class_=False)
 
                 for paragraph in section_paragraphs:
-                    content.append(paragraph)
+                    html_content.append(paragraph)
+
+            content = [p.get_text() for p in html_content]
+            content = '\n'.join(content)
 
             new_reading = Reading(category, title, content)
             readings.append(new_reading)
