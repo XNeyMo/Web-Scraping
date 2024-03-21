@@ -58,6 +58,7 @@ for category_link in categories_links:
 
             sections = soup.find_all(class_="elementor-widget-wrap elementor-element-populated")
 
+            print(f'{category} - {title}')
             # for section in sections:
             #     parrafos = section.find_all('p')
 
