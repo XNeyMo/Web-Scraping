@@ -19,7 +19,7 @@ categories_content = categories_result.text
 categories_pattern = r'https://despertarsabiendo.com/category/[\w-]*'
 categories_links = re.findall(categories_pattern, str(categories_content))
 
-info = []
+readings = []
 counter = 0
 
 for category_link in categories_links:
@@ -32,11 +32,13 @@ for category_link in categories_links:
     if not page_numbers:
         break
 
-    category = category_link.replace('https://despertarsabiendo.com/category/', '')
+    category_name = category_link.replace('https://despertarsabiendo.com/category/', '')
+    category_parts = category_name.split("-")
+    category = " ".join(part.capitalize() for part in category_parts)
 
     page_numbers_to_int = [int(number) for number in page_numbers]
     page_max = max(page_numbers_to_int)
-    
+
     link_to_title = category_link.replace('https://despertarsabiendo.com/category/', 'https://www.despertarsabiendo.com/')
 
     for number in range(1, page_max + 1):
@@ -59,16 +61,18 @@ for category_link in categories_links:
 
             sections = soup.find_all(class_="elementor-widget-wrap elementor-element-populated")
 
-            paragraphs = []
-
-            print(f'{category} - {title}')
+            content = []
 
             for section in sections:
                 section_paragraphs = section.find_all('p')
 
                 for paragraph in section_paragraphs:
-                    paragraphs.append(paragraph)
+                    content.append(paragraph)
 
-            print('finished\n')
+            new_reading = Reading(category, title, content)
+            readings.append(new_reading)
 
     counter += 1
+
+for reading in readings:
+    print(f'{reading.category} - {reading.title}')
